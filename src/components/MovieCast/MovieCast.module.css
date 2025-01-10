@@ -1,0 +1,32 @@
+.castContainer {
+    margin: 20px;
+}
+
+.castList {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+    list-style-type: none;
+    padding: 0;
+    background-image: url('/src/assets/stars.jpg');
+    background-repeat: repeat;
+}
+
+.castItem {
+    text-align: center;
+    width: 150px;
+    box-shadow: 4px 4px 10px grey;
+}
+
+.castImage {
+    width: 100%;
+    height: auto;
+    border-radius: 4px;
+}
+
+.castItem p {
+    margin-top: 1px;
+    font-size: 14px;
+    background-color: rgba(255, 255, 255, 0.9);
+}
