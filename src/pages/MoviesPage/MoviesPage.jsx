@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { searchMovies } from '../../api/api.js';
 import MovieList from '../../components/MovieList/MovieList.jsx';
 import css from './MoviesPage.module.css';
@@ -6,49 +6,45 @@ import { useSearchParams } from 'react-router-dom';
 
 function MoviesPage() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [query, setQuery] = useState('');
   const [movies, setMovies] = useState([]);
 
-  const handleSearch = useCallback(
-    async searchQuery => {
-      if (!searchQuery) {
-        setMovies([]);
-        return;
-      }
-
-      try {
-        const response = await searchMovies(searchQuery);
-        setMovies(response.data?.results || []);
-
-        setSearchParams({ query: searchQuery });
-      } catch (error) {
-        console.error('Oops! Something went wrong while searching for movies. Please try again.', error);
-      }
-    },
-    [setSearchParams]
-  );
+  const query = searchParams.get('query') || '';
 
   const handleQueryChange = e => {
-    setQuery(e.target.value);
+    setSearchParams({ query: e.target.value });
   };
 
   const handleSubmit = e => {
     e.preventDefault();
     const form = e.currentTarget;
-    const searchQuery = form.elements.search.value;
+    const searchQuery = form.elements.search.value.trim();
 
-    handleSearch(searchQuery);
-
-    form.reset();
+    if (searchQuery) {
+      setSearchParams({ query: searchQuery });
+    } else {
+      setSearchParams({});
+    }
   };
 
   useEffect(() => {
-    const searchQuery = searchParams.get('name');
+    const searchQuery = searchParams.get('query');
 
     if (searchQuery) {
-      handleSearch(searchQuery);
+      searchMovies(searchQuery)
+        .then(response => {
+          setMovies(response.data?.results || []);
+        })
+        .catch(error => {
+          console.error(
+            'Oops! Something went wrong while searching for movies. Please try again.',
+            error
+          );
+          setMovies([]);
+        });
+    } else {
+      setMovies([]);
     }
-  }, [searchParams, handleSearch]);
+  }, [searchParams]);
 
   return (
     <div className={css.moviesContainer}>
